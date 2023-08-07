@@ -2,10 +2,7 @@ package io.github.ayamehinode.quarkusSocial.rest;
 
 
 import io.github.ayamehinode.quarkusSocial.rest.dto.CreateUserRequest;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -19,6 +16,11 @@ public class UserResource {
 
         return Response.ok(userRequest).build();
 
+    }
+
+    @GET
+    public Response listAllUsers(){
+        return Response.ok().build();
     }
 
 }
