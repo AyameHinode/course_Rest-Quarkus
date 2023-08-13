@@ -5,11 +5,18 @@ import io.github.ayamehinode.quarkusSocial.domain.model.User;
 import io.github.ayamehinode.quarkusSocial.domain.repository.PostRepository;
 import io.github.ayamehinode.quarkusSocial.domain.repository.UserRepository;
 import io.github.ayamehinode.quarkusSocial.rest.dto.CreatePostRequest;
+import io.github.ayamehinode.quarkusSocial.rest.dto.PostResponse;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.panache.common.Sort;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/users/{userId}/posts")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -47,7 +54,12 @@ public class PostResource {
         if(user == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok().build();
+        PanacheQuery<Post> query = postRepository.find("user", Sort.by("dateTime", Sort.Direction.Descending), user);
+        List<Post> list = query.list();
+        var postResponseList = list.stream()
+                .map(post -> PostResponse.fromEntity(post))
+                .collect(Collectors.toList());
+        return Response.ok(postResponseList).build();
     }
 
 }
