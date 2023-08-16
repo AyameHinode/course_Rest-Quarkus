@@ -2,6 +2,7 @@ package io.github.ayamehinode.quarkusSocial.rest;
 
 import io.github.ayamehinode.quarkusSocial.domain.model.Post;
 import io.github.ayamehinode.quarkusSocial.domain.model.User;
+import io.github.ayamehinode.quarkusSocial.domain.repository.FollowerRepository;
 import io.github.ayamehinode.quarkusSocial.domain.repository.PostRepository;
 import io.github.ayamehinode.quarkusSocial.domain.repository.UserRepository;
 import io.github.ayamehinode.quarkusSocial.rest.dto.CreatePostRequest;
@@ -25,13 +26,16 @@ public class PostResource {
 
     private UserRepository userRepository;
     private PostRepository postRepository;
+    private FollowerRepository followerRepository;
 
     @Inject
     public PostResource(
             UserRepository userRepository,
-            PostRepository postRepository){
+            PostRepository postRepository,
+            FollowerRepository followerRepository){
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.followerRepository = followerRepository;
     }
 
     @POST
@@ -49,11 +53,34 @@ public class PostResource {
     }
 
     @GET
-    public Response listPosts(@PathParam("userId") Long userId){
+    public Response listPosts(@PathParam("userId") Long userId,
+                              @HeaderParam("followerId") Long followerId){
         User user = userRepository.findById(userId);
         if(user == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        if(followerId == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("You need to inform the followerId")
+                    .build();
+        }
+
+        User follower = userRepository.findById(followerId);
+
+        if(follower == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Follower informed does not exist!")
+                    .build();
+        }
+
+        boolean follows = followerRepository.follows(follower, user);
+        if(!follows){
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("Is not posible to see posts for an user you not follow")
+                    .build();
+        }
+
         PanacheQuery<Post> query = postRepository.find("user", Sort.by("dateTime", Sort.Direction.Descending), user);
         List<Post> list = query.list();
         var postResponseList = list.stream()
