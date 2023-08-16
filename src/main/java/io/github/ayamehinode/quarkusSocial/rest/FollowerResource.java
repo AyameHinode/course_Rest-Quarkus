@@ -5,6 +5,7 @@ import io.github.ayamehinode.quarkusSocial.domain.repository.FollowerRepository;
 import io.github.ayamehinode.quarkusSocial.domain.repository.UserRepository;
 import io.github.ayamehinode.quarkusSocial.rest.dto.FollowerRequest;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -23,6 +24,7 @@ public class FollowerResource {
         this.followerRepository = followerRepository;
     }
 
+    @Transactional
     @PUT
     public Response followUser(@PathParam("userId")Long userId, FollowerRequest request){
         var user = userRepository.findById(userId);
@@ -31,11 +33,15 @@ public class FollowerResource {
         }
         var follower = userRepository.findById(request.getFollowerId());
 
-        var entity = new Follower();
-        entity.setUser(user);
-        entity.setFollower(follower);
+        boolean follows = followerRepository.follows(follower, user);
 
-        followerRepository.persist(entity);
+        if(!follows){
+            var entity = new Follower();
+            entity.setUser(user);
+            entity.setFollower(follower);
+            followerRepository.persist(entity);
+        }
+
         return Response.status(Response.Status.NO_CONTENT).build();
 
     }
