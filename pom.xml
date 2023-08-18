@@ -79,6 +79,12 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-devtools-registry-client</artifactId>
+      <version>3.2.2.Final</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
