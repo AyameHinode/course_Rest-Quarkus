@@ -43,8 +43,8 @@ public class UserResource {
         }
 
         User user = new User();
-        user.setName(userRequest.getName());
         user.setAge(userRequest.getAge());
+        user.setName(userRequest.getName());
 
         repository.persist(user);
 
