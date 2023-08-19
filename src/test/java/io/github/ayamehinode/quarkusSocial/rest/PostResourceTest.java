@@ -54,4 +54,23 @@ class PostResourceTest {
 
     }
 
+    @Test
+    @DisplayName("Returns 404 when try to make a post for an inexistent user")
+    public void postForInexistentUserTest(){
+        var newPost = new CreatePostRequest();
+        newPost.setText("Believe in your capacity");
+
+        var inexistentID = 999;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(JsonbBuilder.create().toJson(newPost))
+                .pathParam("userId", inexistentID)
+                .when()
+                .post()
+                .then()
+                .statusCode(404);
+
+    }
+
 }
