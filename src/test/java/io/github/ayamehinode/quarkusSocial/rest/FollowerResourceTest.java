@@ -1,5 +1,6 @@
 package io.github.ayamehinode.quarkusSocial.rest;
 
+import io.github.ayamehinode.quarkusSocial.domain.model.Follower;
 import io.github.ayamehinode.quarkusSocial.domain.model.User;
 import io.github.ayamehinode.quarkusSocial.domain.repository.UserRepository;
 import io.github.ayamehinode.quarkusSocial.rest.dto.FollowerRequest;
@@ -25,16 +26,26 @@ class FollowerResourceTest {
     UserRepository userRepository;
 
     Long userXId;
+    Long followerAxlId;
 
     @BeforeEach
     @Transactional
     void setUp() {
+
         //Default user
         var userX = new User();
         userX.setName("X");
         userX.setAge(16);
         userRepository.persist(userX);
         userXId = userX.getId();
+
+        //Default follower
+        var followerAxl = new User();
+        followerAxl.setName("Axl");
+        followerAxl.setAge(14);
+        userRepository.persist(followerAxl);
+        followerAxlId = followerAxl.getId();
+
     }
 
     @Test
@@ -73,6 +84,24 @@ class FollowerResourceTest {
                 .put()
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+    }
+
+    @Test
+    @DisplayName("Should follow an user successfully")
+    public void followUserTest(){
+
+        var body = new FollowerRequest();
+        body.setFollowerId(followerAxlId);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .pathParam("userId", userXId)
+                .when()
+                .put()
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
     }
 
