@@ -75,8 +75,8 @@ class FollowerResourceTest {
     }
 
     @Test
-    @DisplayName("Should returns NotFound 404 status when inexistent user is trying to follow")
-    public void inexistentUserTryingToFollowTest(){
+    @DisplayName("Should returns NotFound 404 status when not found user is trying to follow")
+    public void notFoundUserTryingToFollowTest(){
 
         var inexistentUserId = 1000;
 
@@ -95,14 +95,14 @@ class FollowerResourceTest {
     }
 
     @Test
-    @DisplayName("Should returns NotFound 404 status on list followers with an inexistent user")
-    public void inexistentUserTryingToListTest(){
+    @DisplayName("Should returns NotFound 404 status on list followers with an not found user")
+    public void notFoundUserTryingToListTest(){
 
-        var inexistentUserId = 1000;
+        var notFoundUserId = 1000;
 
         given()
                 .contentType(ContentType.JSON)
-                .pathParam("userId", inexistentUserId)
+                .pathParam("userId", notFoundUserId)
                 .when()
                 .get()
                 .then()
@@ -147,6 +147,38 @@ class FollowerResourceTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.statusCode());
         assertEquals(1, followersCount);
         assertEquals(1, followersContent.size());
+
+    }
+
+    @Test
+    @DisplayName("Should returns NotFound 404 when unfollow an user that not exists")
+    public void unfollowUserNotFoundTest(){
+
+        var inexistentUserId = 1000;
+
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", inexistentUserId)
+                .queryParam("followerId", followerAxlId)
+                .when()
+                .get()
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+    }
+
+    @Test
+    @DisplayName("Should unfollow an user")
+    public void unfollowUserTest(){
+
+        given()
+                .pathParam("userId", userXId)
+                .queryParam("followerId", followerAxlId)
+                .when()
+                .delete()
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
     }
 
