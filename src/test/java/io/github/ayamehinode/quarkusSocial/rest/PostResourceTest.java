@@ -28,7 +28,9 @@ class PostResourceTest {
 
     @Inject
     UserRepository userRepository;
+    @Inject
     FollowerRepository followerRepository;
+    @Inject
     PostRepository postRepository;
 
     Long userId;
@@ -40,8 +42,8 @@ class PostResourceTest {
     public void setup(){
         //Principal user
         var user = new User();
-        user.setAge(16);
         user.setName("X");
+        user.setAge(16);
         userRepository.persist(user);
         userId = user.getId();
 
@@ -64,10 +66,11 @@ class PostResourceTest {
         userRepository.persist(follower);
         followerId = follower.getId();
 
-        Follower Xsfollower = new Follower();
-        Xsfollower.setUser(user);
-        Xsfollower.setFollower(follower);
-        followerRepository.persist(Xsfollower);
+        Follower XFollower = new Follower();
+        XFollower.setUser(user);
+        XFollower.setFollower(follower);
+        followerRepository.persist(XFollower);
+
     }
 
     @Test
@@ -171,7 +174,7 @@ class PostResourceTest {
     @DisplayName("Should list all posts")
     public void listPostTest(){
 
-        given()
+      given()
                 .pathParam("userId", userId)
                 .header("followerId", followerId)
                 .when()

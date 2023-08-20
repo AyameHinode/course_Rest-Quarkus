@@ -81,7 +81,8 @@ public class PostResource {
                     .build();
         }
 
-        PanacheQuery<Post> query = postRepository.find("user", Sort.by("dateTime", Sort.Direction.Descending), user);
+        PanacheQuery<Post> query = postRepository.find(
+                "user", Sort.by("dateTime", Sort.Direction.Descending), user);
         List<Post> list = query.list();
         var postResponseList = list.stream()
                 .map(post -> PostResponse.fromEntity(post))
