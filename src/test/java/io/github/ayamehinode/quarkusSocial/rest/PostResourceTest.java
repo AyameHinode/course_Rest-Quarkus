@@ -1,6 +1,10 @@
 package io.github.ayamehinode.quarkusSocial.rest;
 
+import io.github.ayamehinode.quarkusSocial.domain.model.Follower;
+import io.github.ayamehinode.quarkusSocial.domain.model.Post;
 import io.github.ayamehinode.quarkusSocial.domain.model.User;
+import io.github.ayamehinode.quarkusSocial.domain.repository.FollowerRepository;
+import io.github.ayamehinode.quarkusSocial.domain.repository.PostRepository;
 import io.github.ayamehinode.quarkusSocial.domain.repository.UserRepository;
 import io.github.ayamehinode.quarkusSocial.rest.dto.CreatePostRequest;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -24,16 +28,46 @@ class PostResourceTest {
 
     @Inject
     UserRepository userRepository;
+    FollowerRepository followerRepository;
+    PostRepository postRepository;
+
     Long userId;
+    Long notFollowerId;
+    Long followerId;
 
     @BeforeEach
     @Transactional
     public void setup(){
+        //Principal user
         var user = new User();
-        user.setAge(15);
+        user.setAge(16);
         user.setName("X");
         userRepository.persist(user);
         userId = user.getId();
+
+        Post post = new Post();
+        post.setText("My name is X");
+        post.setUser(user);
+        postRepository.persist(post);
+
+        //NotFollower user
+        var notFollower = new User();
+        notFollower.setAge(19);
+        notFollower.setName("Zero");
+        userRepository.persist(notFollower);
+        notFollowerId = notFollower.getId();
+
+        //Follower user
+        var follower = new User();
+        follower.setAge(14);
+        follower.setName("Axl");
+        userRepository.persist(follower);
+        followerId = follower.getId();
+
+        Follower Xsfollower = new Follower();
+        Xsfollower.setUser(user);
+        Xsfollower.setFollower(follower);
+        followerRepository.persist(Xsfollower);
     }
 
     @Test
@@ -122,11 +156,29 @@ class PostResourceTest {
     @DisplayName("Should return 403 when followerId isn't a follower")
     public void listPostNotFollowerTest(){
 
+        given()
+                .pathParam("userId", userId)
+                .header("followerId", notFollowerId)
+                .when()
+                .get()
+                .then()
+                .statusCode(403)
+                .body(Matchers.is("Is not posible to see posts for an user you not follow"));
+
     }
 
     @Test
     @DisplayName("Should list all posts")
     public void listPostTest(){
+
+        given()
+                .pathParam("userId", userId)
+                .header("followerId", followerId)
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .body("size()", Matchers.is(1));
 
     }
 
