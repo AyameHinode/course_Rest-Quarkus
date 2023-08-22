@@ -1,6 +1,7 @@
 package io.github.ayamehinode;
 
-import io.quarkus.runtime.Application;
+
+import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 
 import org.eclipse.microprofile.openapi.annotations.info.Contact;
@@ -22,24 +23,5 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
                 )
         )
 )
-
 public class QuarkusSocialApplication extends Application {
-    protected QuarkusSocialApplication(boolean auxiliaryApplication) {
-        super(auxiliaryApplication);
-    }
-
-    @Override
-    protected void doStart(String[] args) {
-
-    }
-
-    @Override
-    protected void doStop() {
-
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
 }
